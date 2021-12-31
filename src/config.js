@@ -1,16 +1,16 @@
 
 
 // for China NX
-// export const BASE = 'https://f1kxya4jza.execute-api.cn-northwest-1.amazonaws.com.cn';
+export const BASE = 'https://4cyh1ztsz3.execute-api.cn-northwest-1.amazonaws.com.cn';
 
 // for Korea
-export const BASE = 'https://5d50gubidj.execute-api.ap-northeast-2.amazonaws.com';
+// export const BASE = 'https://5d50gubidj.execute-api.ap-northeast-2.amazonaws.com';
 
 
 export const Guest_noyes = ['g_no','g_yes'];
 export const GunStandard = ['US','EU','GB'];
+export const ChargerSTATS = ['readyfree','readygunin','readywaiting','readycharging','readybadgnd','stopdown','offline'];
 export const ChargerGuns = ['threeparse1gun','singleparse1gun','singleparse2guns','singleparse3guns'];
-export const shadowkeydesc = ['STOP','DOOR','TEMP','TEMP','ECURRENT0','ECURRENT1','ECURRENT2','GUNSTATE0','GUNSTATE1','GUNSTATE2','GUNSWITCH0','GUNSWITCH1','GUNSWITCH2'];
 
 if (typeof(Date.prototype.format) === "undefined") {
   Date.prototype.format = function(fmt) {

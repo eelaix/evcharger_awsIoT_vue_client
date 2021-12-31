@@ -1,7 +1,7 @@
 <template>
   <div id="app2">
   <b-container fluid="xs">
-    <b-table-simple hover small caption-top responsive="xs" v-show="items.length">
+    <b-table-simple hover small caption-top responsive="xs">
       <b-thead head-variant="light">
         <b-tr>
           <b-th v-b-tooltip.hover :title="$t('message.title_chargerid')">{{'chargerid'|trans}}</b-th>
@@ -24,7 +24,7 @@
               <b-input-group size="sm">
                 <b-form-input v-model="item.chargerid"></b-form-input>
                 <b-input-group-append>
-                  <b-button variant="info" @click="setchargerid(item)">{{$t('message.btn_save')}}</b-button>
+                  <b-button variant="outline-warning" @click="setchargerid(item)">{{$t('message.btn_save')}}</b-button>
                 </b-input-group-append>
               </b-input-group>
           </b-td>
@@ -32,18 +32,18 @@
           <b-icon icon="gear" @click="setme(index)" class="ml-3" size="lg" variant="warning"></b-icon>
           </b-td>
           <b-td v-else>
-            <b-button size="sm" variant="outline-secondary" :href="'/charger.html?id='+item.chargerid">{{item.chargerid}}</b-button>
+            <b-button variant="outline-warning" size="sm" :href="'/charger.html?id='+item.chargerid">{{item.chargerid}}</b-button>
           </b-td>
-          <b-td>{{item.beeptime}}</b-td>
-          <b-td>{{item.actdate}}</b-td>
+          <b-td v-b-tooltip.hover :title="item.mac">{{item.beeptime}}</b-td>
+          <b-td v-b-tooltip.hover :title="item.rebootdate">{{item.onlinedate}}</b-td>
           <b-td class="d-none d-md-table-cell">{{GUNSTANDARD[item.gunstandard]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="secondary"></b-icon>
+          <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
           </b-td>
           <b-td class="d-none d-md-table-cell">{{CHARGERGUNS[item.chargertype]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(1,index)" variant="secondary"></b-icon>
+          <b-icon icon="chevron-down" @click="openmodal(1,index)" variant="warning"></b-icon>
           </b-td>
           <b-td class="d-none d-md-table-cell">{{GUEST_NOYES[item.guestok]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="secondary"></b-icon>
+          <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
           </b-td>
           <b-td class="d-none d-md-table-cell">{{item.pon}}</b-td>
           <b-td class="d-none d-md-table-cell">{{item.location}}</b-td>
@@ -52,20 +52,20 @@
           <b-td class="d-none d-md-table-cell">{{item.pwa}}</b-td>
           <b-td class="d-none d-md-table-cell">
             <b-button-group size="sm">
-                  <b-button :variant="item.connected==0?'outline-secondary':'outline-warning'" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
-                  <b-button :variant="item.connected==0?'outline-secondary':'outline-warning'" @click="docmd(2,item)" :disabled="item.connected==0">{{$t('message.op_reboot')}}</b-button>
-                  <b-button :variant="item.connected==0?'outline-secondary':'outline-warning'" @click="docmd(3,item)" :disabled="item.connected==0">{{$t('message.op_beep')}}</b-button>
+                  <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
+                  <b-button variant="outline-warning" @click="docmd(2,item)" :disabled="item.connected==0">{{$t('message.op_reboot')}}</b-button>
+                  <b-button variant="outline-warning" @click="docmd(3,item)" :disabled="item.connected==0">{{$t('message.op_beep')}}</b-button>
             </b-button-group>
           </b-td>
       </b-tr>
       <b-tr>
         <b-td colspan="3" class="d-table-cell d-md-none">
           {{GUNSTANDARD[item.gunstandard]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="secondary"></b-icon>
+          <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
           {{CHARGERGUNS[item.chargertype]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(1,index)" variant="secondary"></b-icon>
+          <b-icon icon="chevron-down" @click="openmodal(1,index)" variant="warning"></b-icon>
           {{GUEST_NOYES[item.guestok]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="secondary"></b-icon>
+          <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
           {{item.pon}}/{{item.pwa}}Kwh
         </b-td>
       </b-tr>
@@ -74,26 +74,53 @@
             {{item.ecurrent}}/
             {{item.tp0}}/{{item.tp2}}°C
               <b-button-group size="sm">
-                    <b-button :variant="item.connected==0?'outline-secondary':'outline-warning'" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
-                    <b-button :variant="item.connected==0?'outline-secondary':'outline-warning'" @click="docmd(2,item)" :disabled="item.connected==0">{{$t('message.op_reboot')}}</b-button>
-                    <b-button :variant="item.connected==0?'outline-secondary':'outline-warning'" @click="docmd(3,item)" :disabled="item.connected==0">{{$t('message.op_beep')}}</b-button>
+                    <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
+                    <b-button variant="outline-warning" @click="docmd(2,item)" :disabled="item.connected==0">{{$t('message.op_reboot')}}</b-button>
+                    <b-button variant="outline-warning" @click="docmd(3,item)" :disabled="item.connected==0">{{$t('message.op_beep')}}</b-button>
               </b-button-group>
         </b-td>
       </b-tr>
     </b-tbody>
   </b-table-simple>
+  <div v-show="items.length==0" class="pl-4 pr-4">
+    <b-card header-tag="header" footer-tag="footer" style="box-shadow: 10px 10px 20px rgba(51, 51, 51, .4);">
+      <template v-slot:header>
+        <h4 class="mb-0"><b-icon icon="lightning"></b-icon> {{$t('message.dev_empty_title')}}</h4>
+      </template>
+      <b-card-text>
+        <p>
+          <span v-html="$t('message.dev_empty_context')"></span>
+         </p>
+      </b-card-text>
+    </b-card>
+  </div>
   <b-form inline class="mt-2 ml-2">
-    <b-button-group class="mr-auto">
-      <b-button variant="success" disabled="disabled">{{$t('message.btn_more')}}</b-button>
-    </b-button-group>
-    <b-navbar-nav class="mr-2">
-      <b-nav-item @click="setLocale">{{'Change Language To: '|trans}}
-      <b-avatar class="btn ml-2" size="2em" v-t.text="'message.languageto'" @click="setLocale"></b-avatar>
-      </b-nav-item>
-    </b-navbar-nav>
+    <b-input-group class="col-12">
+      <b-button-group class="mr-auto">
+        <b-button variant="success" disabled="true">{{$t('message.btn_more')}}</b-button>
+      </b-button-group>
+      <b-navbar-nav class="mr-2">
+        <b-nav-item @click="setLocale">{{'Change Language To: '|trans}}
+          <b-avatar class="btn ml-2" v-t.text="'message.languageto'" @click="setLocale"></b-avatar>
+        </b-nav-item>
+      </b-navbar-nav>
+    </b-input-group>
   </b-form>
-  <b-form inline class="mt-2 mb-4">
-    <b-input-group class="ml-auto col-12">
+  <b-form inline class="mt-2 ml-2">
+    <b-input-group class="col-12">
+      <b-radio-group buttons class="mr-4" v-model="onoffsearch" button-variant="outline-primary" disabled="true">
+        <b-form-radio value="0">{{$t('message.onoffall')}}</b-form-radio>
+        <b-form-radio value="1">{{$t('message.onlineonly')}}</b-form-radio>
+        <b-form-radio value="2">{{$t('message.offlineonly')}}</b-form-radio>
+      </b-radio-group>
+      <b-form-input :placeholder="$t('message.searchhint')" v-model="search" disabled="true"></b-form-input>
+      <b-input-group-append>
+        <b-button variant="outline-primary" disabled="true">{{$t('message.btn_search')}}</b-button>
+      </b-input-group-append>
+    </b-input-group>
+  </b-form>
+  <b-form inline class="mt-2 ml-2 mb-4">
+    <b-input-group class="col-12">
         <b-form-input :placeholder="$t('message.myuflaghint')" v-model="uflag"></b-form-input>
         <b-input-group-append>
           <b-button variant="info" @click="setuflag">{{$t('message.btn_save')}}</b-button>
@@ -106,7 +133,6 @@
 </template>
 
 <script>
-import { shadowkeydesc } from '@/config'
 import { ChargerGuns } from '@/config'
 import { GunStandard } from '@/config'
 import { Guest_noyes } from '@/config'
@@ -127,6 +153,7 @@ export default {
       utype: 0,
       uflag: '',
       search: '',
+      onoffsearch:0,
       connected: 0,
       items: [],
       caller: {funid:0,index:0,datas:[]},
@@ -134,8 +161,7 @@ export default {
       GUESTOKS: [this.$t('message.guest_no'),this.$t('message.guest_yes')],
       GUEST_NOYES: Guest_noyes,
       CHARGERGUNS: ChargerGuns,
-      GUNSTANDARD: GunStandard,
-      SHADOWKEYDESC: shadowkeydesc
+      GUNSTANDARD: GunStandard
     }
   },
   methods: {
@@ -238,7 +264,7 @@ export default {
       }
     },
     async docmd(cmdid, itm) {
-      if ( cmdid < 2 ) itm.connected = 0;
+      if ( cmdid < 3 ) itm.connected = 0;
       let evuserid = localStorage.getItem('evuserid');
       let qryparam = '/docmd?userid='+evuserid+'&tm='+new Date().getTime()+'&cmd='+cmdid+'&mac='+itm.mac;
       await this.axios.get(qryparam);
@@ -263,8 +289,3 @@ export default {
   }
 }
 </script>
-
-<style>
-#app2 {
-}
-</style>

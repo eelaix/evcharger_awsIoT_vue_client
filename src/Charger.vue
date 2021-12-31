@@ -10,8 +10,10 @@
     </b-form>
     <div class="boxw devbox1">
         <div class="boxw devbox2" :class="chargerstaclass[charge.stateid]">
-          <div class="text-center pt-4" :class="requestclass">{{'chargerid'|trans}}: {{chargerid}}</div>
-          <div class="text-center pb-4">{{'chargerguns'|trans}}: {{CHARGERGUNS[charge.chargertype]|trans}}</div>
+          <div class="boxhead mt-2 mb-4">
+          <div class="pt-3" :class="requestclass">{{'chargerid'|trans}}: {{chargerid}}</div>
+          <div class="pb-3">{{'chargerguns'|trans}}: {{CHARGERGUNS[charge.chargertype]|trans}}</div>
+          </div>
           <b-row cols="2">
             <b-col class="rowpad1">
     <div>{{'state_charger'|trans}}: <br/><span class="text-info">{{charge.connected==1?$t('message.online'):$t('message.offline')}}</span></div>
@@ -23,7 +25,7 @@
             </b-col>
             <b-col class="rowpad2">
     <div>{{'charge_fwmver'|trans}}: <br/><span class="text-primary">{{charge.ver}}</span></div>
-    <div>{{'charge_stand'|trans}}: <br/><span class="text-primary">{{GUNSTANDARD[charge.gunstandard]|trans}}</span></div>
+    <div>{{'state_dev'|trans}}: <br/><span class="text-primary">{{CHARGERSTATS[charge.stateid]|trans}}</span></div>
     <div>{{'charge_current'|trans}}: <br/><span class="text-primary">{{charge.ixa}}A</span></div>
     <div>{{'charge_tempure'|trans}}: <br/><span class="text-primary">{{charge.tp0}}°C</span></div>
     <div>{{'charge_volplus'|trans}}: <br/><span class="text-primary">{{charge.cpa}}V</span></div>
@@ -72,9 +74,8 @@ const getQueryString = function ( name ) {
   if (r != null) return decodeURI(r[2])
   return null
 }
-import { shadowkeydesc } from '@/config'
 import { ChargerGuns } from '@/config'
-import { GunStandard } from '@/config'
+import { ChargerSTATS } from '@/config'
 export default {
   name: 'charger',
   components: {
@@ -95,8 +96,7 @@ export default {
       chargerstaclass:['st_readyfree','st_readygunin','st_readywaiting','st_readycharging','st_readybadgnd','st_stopdown','st_offline'],
       charge:{mac:'',guestok:1,chargertype:0,gunstandard:0,connected:0,ver:'0.0.0',pnp:0,stp:0,dor:0,lgd:0,st0:0,st1:0,st2:0,pw0:0,pw1:0,pw2:0,pw3:0,ix0:0,ix1:0,ix2:0,tp0:0,tp1:0,cp0:0,cp1:0,cp2:0,cz0:0,cz1:0,cz2:0,stateid:0,imax:[32,0,0]},
       CHARGERGUNS:ChargerGuns,
-      GUNSTANDARD:GunStandard,
-      SHADOWKEYDESC:shadowkeydesc
+      CHARGERSTATS:ChargerSTATS
     }
   },
   methods: {
@@ -142,11 +142,13 @@ export default {
       this.fetchData();
     },
     async docharge(){
-      this.charge.stateid = 2;
-      let evuserid = localStorage.getItem('evuserid');
-      let doparam = '/docharge?tm='+new Date().getTime()+'&userid='+evuserid+'&mac='+this.charge.mac+'&gunid='+this.gunid;
-      await this.axios.get(doparam);
-      this.fetchData();
+      if (this.charge.stateid<2) {
+        this.charge.stateid = 2;
+        let evuserid = localStorage.getItem('evuserid');
+        let doparam = '/docharge?tm='+new Date().getTime()+'&userid='+evuserid+'&mac='+this.charge.mac+'&gunid='+this.gunid;
+        await this.axios.get(doparam);
+        this.fetchData();
+      }
     },
     async setuflag() {
       if ( this.uflag.length>0 ) {
@@ -172,7 +174,7 @@ export default {
 <style>
 @media only screen and (orientation: portrait) {
   #app1 {
-    line-height: 1.5em;
+    line-height: 1.4em;
   }
   .boxw {
     width:100%;
@@ -182,10 +184,23 @@ export default {
     border: 1px dotted rgba(0,0,0,0.1);
   }
   .rowpad1 div {
-    padding-left:40px;
+    margin-left:34px;
+    padding-left:20px;
+    margin-bottom: 10px;
+    border-radius:50%;
+    width:90%;
+    border-left:1px dotted rgba(0,0,0,0.2);
+    border-bottom:1px dotted rgba(0,0,0,0.2);
+    border-right:1px dotted rgba(0,0,0,0.2);
   }
   .rowpad2 div {
-    padding-left:10px;
+    padding-left:30px;
+    margin-bottom: 10px;
+    border-radius:50%;
+    width:80%;
+    border-left:1px dotted rgba(0,0,0,0.2);
+    border-bottom:1px dotted rgba(0,0,0,0.2);
+    border-right:1px dotted rgba(0,0,0,0.2);
   }
 }
 @media only screen and (orientation: landscape) {
@@ -197,15 +212,37 @@ export default {
     border-radius:100%;
   }
   .devbox2 {
-    line-height: 2em;
+    line-height: 1.8em;
     border: 1px dotted rgba(0,0,0,0.1);
   }
   .rowpad1 div {
-    padding-left:100px;
+    margin-left:100px;
+    padding-left:40px;
+    margin-bottom: 10px;
+    border-radius:50%;
+    border-left:1px dotted rgba(0,0,0,0.2);
+    border-bottom:1px dotted rgba(0,0,0,0.2);
+    border-right:1px dotted rgba(0,0,0,0.2);
   }
   .rowpad2 div {
+    margin-left:0px;
     padding-left:40px;
+    width:60%;
+    margin-bottom: 10px;
+    border-radius:50%;
+    border-left:1px dotted rgba(0,0,0,0.2);
+    border-bottom:1px dotted rgba(0,0,0,0.2);
+    border-right:1px dotted rgba(0,0,0,0.2);
   }
+}
+.boxhead{
+  margin:0 auto;
+  width:50%;
+  text-align: center;
+  border-radius:50%;
+  border-left:1px dotted rgba(255,0,0,0.2);
+  border-bottom:1px dotted rgba(255,0,0,0.2);
+  border-right:1px dotted rgba(255,0,0,0.2);
 }
 .devbox1 {
   margin:0 auto;
