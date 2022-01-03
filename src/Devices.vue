@@ -11,9 +11,9 @@
           <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_chargertype')">{{'chargertype'|trans}}</b-th>
           <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_guestok')">{{'guestok'|trans}}</b-th>
           <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_boottimes')">{{'boottimes'|trans}}</b-th>
-          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_location')">{{'location'|trans}}</b-th>
-          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_ecurrent')">{{'ecurrent'|trans}}</b-th>
-          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_temperature')">{{'temperature'|trans}}</b-th>
+          <b-th class="d-none d-lg-table-cell" v-b-tooltip.hover :title="$t('message.title_location')">{{'location'|trans}}</b-th>
+          <b-th class="d-none d-lg-table-cell" v-b-tooltip.hover :title="$t('message.title_ecurrent')">{{'ecurrent'|trans}}</b-th>
+          <b-th class="d-none d-lg-table-cell" v-b-tooltip.hover :title="$t('message.title_temperature')">{{'temperature'|trans}}</b-th>
           <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_power')">{{'power'|trans}}</b-th>
           <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_operate')">{{'operate'|trans}}</b-th>
         </b-tr>
@@ -46,9 +46,9 @@
           <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
           </b-td>
           <b-td class="d-none d-md-table-cell">{{item.pon}}</b-td>
-          <b-td class="d-none d-md-table-cell">{{item.location}}</b-td>
-          <b-td class="d-none d-md-table-cell">{{item.ecurrent}}</b-td>
-          <b-td class="d-none d-md-table-cell">{{item.tp0}}/{{item.tp2}}°C</b-td>
+          <b-td class="d-none d-lg-table-cell">{{item.location}}</b-td>
+          <b-td class="d-none d-lg-table-cell">{{item.ecurrent}}</b-td>
+          <b-td class="d-none d-lg-table-cell">{{item.tp0}}/{{item.tp2}}°C</b-td>
           <b-td class="d-none d-md-table-cell">{{item.pwa}}</b-td>
           <b-td class="d-none d-md-table-cell">
             <b-button-group size="sm">
@@ -193,7 +193,7 @@ export default {
       let loginresult = await this.axios.get(qryparam);
       this.utype = loginresult.data.utype;
       this.uflag = loginresult.data.uflag;
-      if (evuserid==undefined || evuserid.length!=21)
+      if (loginresult.data.id)
       {
         localStorage.setItem('evuserid', loginresult.data.id);
       }
