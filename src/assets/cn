@@ -64,6 +64,7 @@ export const  message = {
   'btn_save':'保存',
   'btn_more':'更多',
   'btn_search':'查找',
+  'btn_ok':'确定',
   'chargerguns':'充电枪数',
   'online':'在线',
   'offline':'离线',
@@ -103,4 +104,9 @@ export const  message = {
   'offlineonly':'离线',
   'dev_empty_title':'没有找到设备',
   'dev_empty_context':'需要授权才能查询数据<br/>如已授权,请修改查询条件再试<br/>点击电桩编号可以打开充电功能页<br/>如有新固件,点击版本号可以升级<br/>点击重启可以实现远程启动<br/>设备可支持美标/欧标/中国国标充电枪<br/>设备可支持三相单枪及单相多枪<br/>系统默认启动充电无需授权，可设置为需要授权启动<br/>',
+  'err_uflag':'用户昵称或手机号用来区别账号,最少3位',
+  'ok_uflag':'用户昵称或手机号码已设置成功',
+  'err_search1':'搜索字符太少,最少需要4个字符',
+  'err_search2':'搜索字符太多,最多12个字符',
+  'err_search3':'错误：按日期查询，必需包含减号',
 }

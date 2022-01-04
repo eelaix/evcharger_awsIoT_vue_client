@@ -60,7 +60,7 @@
       <b-input-group class="ml-auto mt-4 col-10 col-md-6 col-lg-3 col-xl-3">
           <b-form-input :placeholder="$t('message.myuflaghint')" v-model="uflag"></b-form-input>
           <b-input-group-append>
-            <b-button variant="info" @click="setuflag">{{$t('message.btn_save')}}</b-button>
+            <b-button variant="info" @click="setuflag" :disabled="clicked">{{$t('message.btn_save')}}</b-button>
           </b-input-group-append>
       </b-input-group>
   </b-container>
@@ -91,6 +91,7 @@ export default {
       chargerid:getQueryString('id'),
       utype:0,
       uflag:'',
+      clicked:false,
       requestclass:'text-danger',
       gunid:0,
       chargerstaclass:['st_readyfree','st_readygunin','st_readywaiting','st_readycharging','st_readybadgnd','st_stopdown','st_offline'],
@@ -152,6 +153,7 @@ export default {
     },
     async setuflag() {
       if ( this.uflag.length>0 ) {
+        this.clicked = true;
         let evuserid = localStorage.getItem('evuserid');
         let qryparam = '/setuserflag?userid='+evuserid+'&tm='+new Date().getTime()+'&uflag='+this.uflag;
         await this.axios.get(qryparam);

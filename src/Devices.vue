@@ -108,14 +108,14 @@
   </b-form>
   <b-form inline class="mt-2 ml-2">
     <b-input-group class="col-12">
-      <b-radio-group buttons class="mr-4" v-model="onoffsearch" button-variant="outline-primary" disabled="true">
+      <b-radio-group buttons class="mr-4" v-model="onoffsearch" button-variant="outline-primary" @change="onoffclick">
         <b-form-radio value="0">{{$t('message.onoffall')}}</b-form-radio>
         <b-form-radio value="1">{{$t('message.onlineonly')}}</b-form-radio>
         <b-form-radio value="2">{{$t('message.offlineonly')}}</b-form-radio>
       </b-radio-group>
-      <b-form-input :placeholder="$t('message.searchhint')" v-model="search" disabled="true"></b-form-input>
+      <b-form-input :placeholder="$t('message.searchhint')" v-model="search"></b-form-input>
       <b-input-group-append>
-        <b-button variant="outline-primary" disabled="true">{{$t('message.btn_search')}}</b-button>
+        <b-button variant="outline-primary" @click="dosearch">{{$t('message.btn_search')}}</b-button>
       </b-input-group-append>
     </b-input-group>
   </b-form>
@@ -123,10 +123,11 @@
     <b-input-group class="col-12">
         <b-form-input :placeholder="$t('message.myuflaghint')" v-model="uflag"></b-form-input>
         <b-input-group-append>
-          <b-button variant="info" @click="setuflag">{{$t('message.btn_save')}}</b-button>
+          <b-button variant="info" @click="setuflag" :disabled="clicked">{{$t('message.btn_save')}}</b-button>
         </b-input-group-append>
     </b-input-group>
   </b-form>
+  <b-modal v-model="modalshow" no-close-on-backdrop no-close-on-esc hide-header ok-only :ok-title="$t('message.btn_ok')">{{modalmsg}}</b-modal>
   <Selector v-bind="caller" @callback="callback" />
   </b-container>
   </div>
@@ -152,9 +153,11 @@ export default {
       workingme:-1,
       utype: 0,
       uflag: '',
+      clicked:false,
+      modalshow: false,
+      modalmsg:'',
       search: '',
       onoffsearch:0,
-      connected: 0,
       items: [],
       caller: {funid:0,index:0,datas:[]},
       nextPageToken:undefined,
@@ -165,23 +168,18 @@ export default {
     }
   },
   methods: {
-    dosearch() {
-      this.nextPageToken = undefined;
-      this.items = [];
-      this.fetchData();
-    },
     async fetchData(){
       let evuserid = localStorage.getItem('evuserid');
       let qrystr = '/listchargers?tm='+new Date().getTime()+'&userid='+evuserid;
       if ( this.nextPageToken ) {
         qrystr = qrystr + '&nextToken=' + this.nextPageToken;
       }
-      if ( this.search && this.search.legth>0 ) {
+      if ( this.search && this.search.length>0 ) {
         qrystr = qrystr + '&search=' + this.search;
       }
-      if ( this.connected>0 )
+      if ( this.onoffsearch>0 )
       {
-        qrystr = qrystr + '&connected=' + this.connected;
+        qrystr = qrystr + '&connected=' + this.onoffsearch;
       }
       let result = await this.axios.get(qrystr);
       if ( result.data.nextToken ) this.nextPageToken = result.data.nextToken;
@@ -220,7 +218,6 @@ export default {
         this.caller.index = item.guestok;
         this.caller.datas = [this.$t('message.guest_no'),this.$t('message.guest_yes')];
       }
-      console.log(this.caller.datas);
       this.$bvModal.show('mdSelector0');
     },
     async callback(obj) {
@@ -251,6 +248,30 @@ export default {
         this.fetchData();
       }
     },
+    onoffclick($event){
+      this.search = '';
+      this.onoffsearch=Number($event);
+      this.nextPageToken = undefined;
+      this.items = [];
+      this.fetchData();
+    },
+    dosearch() {
+      if ( this.search.length>0 && this.search.length<4 ) {
+        this.modalmsg = this.$t('message.err_search1');
+        this.modalshow = true;
+      } else if ( this.search.length > 12 ) {
+        this.modalmsg = this.$t('message.err_search2');
+        this.modalshow = true;
+      } else if ( this.search.length > 6 && this.search.length < 11 && this.search.indexOf('-') == -1 ) {
+        this.modalmsg = this.$t('message.err_search3');
+        this.modalshow = true;
+      } else {
+        this.onoffsearch = 0;
+        this.nextPageToken = undefined;
+        this.items = [];
+        this.fetchData();
+      }
+    },
     async setme(idx) {
       this.workingid = idx;
     },
@@ -260,7 +281,8 @@ export default {
       let qryparam = '/setchargerid?userid='+evuserid+'&tm='+new Date().getTime()+'&mac='+itm.mac+'&chargerid='+itm.chargerid;
       let ret = await this.axios.get(qryparam);
       if ( ret.rc < 0 ) {
-        alert(ret.rm);
+        this.modalmsg = ret.tm;
+        this.modalshow = true;
       }
     },
     async docmd(cmdid, itm) {
@@ -270,14 +292,19 @@ export default {
       await this.axios.get(qryparam);
     },
     async setuflag() {
-      if ( this.uflag.length>0 ) {
+      if ( this.uflag.length>2 ) {
+        this.clicked = true;
         let evuserid = localStorage.getItem('evuserid');
         let qryparam = '/setuserflag?userid='+evuserid+'&tm='+new Date().getTime()+'&uflag='+this.uflag;
         await this.axios.get(qryparam);
+        this.modalmsg = this.$t('message.ok_uflag');
+        this.modalshow = true;
+      } else {
+        this.modalmsg = this.$t('message.err_uflag');
+        this.modalshow = true;
       }
     },
     setLocale() {
-      console.log(this.$i18n.locale);
       if (this.$i18n.locale=='EN') {
         localStorage.setItem('locale', 'CN');
         this.$i18n.locale='CN';

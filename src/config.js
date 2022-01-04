@@ -1,10 +1,10 @@
 
 
 // for China NX
-export const BASE = 'https://4cyh1ztsz3.execute-api.cn-northwest-1.amazonaws.com.cn';
+export const BASE = 'https://k2alyld53e.execute-api.cn-northwest-1.amazonaws.com.cn';
 
 // for Korea
-// export const BASE = 'https://5d50gubidj.execute-api.ap-northeast-2.amazonaws.com';
+//export const BASE = 'https://g3kvgpb183.execute-api.ap-northeast-2.amazonaws.com';
 
 
 export const Guest_noyes = ['g_no','g_yes'];
