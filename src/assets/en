@@ -106,8 +106,11 @@ export const  message = {
   'dev_empty_context':'Authorization needed for data query<br/>Change query condition when "Device NOT found" shows<br/>Click on chargerid to enter charging page<br/>When new version ready, click version number to upgrade<br/>US/EU/GB guns supported in factory<br/>Three phase or single parse multi guns supported in factory<br/>Start charge without authorized by default<br/>With authorized charging can be set<br/>',
   'err_uflag':'For authorized charing, nickname or cell number is used to find you from others',
   'ok_uflag':'Your custom infomation has been set',
+  'set_ok':'Configure success, Plz reboot device to valid',
+  'set_fail':'Configure fail',
   'err_search1':'Search string too short, 2+ chars needed.',
   'err_search2':'Too many search strings, no more than 12',
   'err_search3':'ERROR: Search by date , the character "-" must be include',
-  
+  'err_imax':'Numberic needed here',
+  'err_maxi':'Max current can not more than 32',
 }

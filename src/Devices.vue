@@ -47,7 +47,18 @@
           </b-td>
           <b-td class="d-none d-md-table-cell">{{item.pon}}</b-td>
           <b-td class="d-none d-lg-table-cell">{{item.location}}</b-td>
-          <b-td class="d-none d-lg-table-cell">{{item.ecurrent}}</b-td>
+          <b-td v-if="imaxid==index">
+              <b-input-group size="sm">
+                <b-form-input v-model="item.imax[0]"></b-form-input>
+                <b-form-input v-model="item.imax[1]"></b-form-input>
+                <b-form-input v-model="item.imax[2]"></b-form-input>
+                <b-input-group-append>
+                  <b-button variant="outline-warning" @click="setimax(item)">{{$t('message.btn_save')}}</b-button>
+                </b-input-group-append>
+              </b-input-group>
+          </b-td>
+          <b-td v-else @click="imaxme(index)">{{item.ecurrent}}
+          </b-td>
           <b-td class="d-none d-lg-table-cell">{{item.tp0}}/{{item.tp2}}°C</b-td>
           <b-td class="d-none d-md-table-cell">{{item.pwa}}</b-td>
           <b-td class="d-none d-md-table-cell">
@@ -149,6 +160,7 @@ export default {
   },
   data() {
     return {
+      imaxid: -1,
       workingid:-1,
       workingme:-1,
       utype: 0,
@@ -272,8 +284,32 @@ export default {
         this.fetchData();
       }
     },
-    async setme(idx) {
+    setme(idx) {
       this.workingid = idx;
+    },
+    imaxme(idx) {
+      this.imaxid = idx;
+    },
+    async setimax(itm) {
+      itm.imax[0] = Number(itm.imax[0]);
+      itm.imax[1] = Number(itm.imax[1]);
+      itm.imax[2] = Number(itm.imax[2]);
+      if (isNaN(itm.imax[0]) || isNaN(itm.imax[1]) || isNaN(itm.imax[2])) {
+        this.modalmsg = this.$t('message.err_imax');
+        this.modalshow = true;
+        return;
+      }
+      if (itm.imax[0]>32 || itm.imax[1]>32 || itm.imax[2]>32) {
+        this.modalmsg = this.$t('message.err_maxi');
+        this.modalshow = true;
+        return;
+      }
+      this.imaxid = -1;
+      let evuserid = localStorage.getItem('evuserid');
+      let qryparam = '/setimax?userid='+evuserid+'&tm='+new Date().getTime()+'&mac='+itm.mac+'&imax='+itm.imax.join(',');
+      await this.axios.get(qryparam);
+      this.modalmsg = this.$t('message.set_ok');
+      this.modalshow = true;
     },
     async setchargerid(itm) {
       this.workingid = -1;
