@@ -1,5 +1,6 @@
 <template>
   <div id="app1">
+  <div v-if="loads==0" class="mask" @touchmove.prevent>&nbsp;</div>
   <b-container fluid="xs">
     <b-form inline>
       <b-navbar-nav class="mr-2 ml-auto">
@@ -110,13 +111,20 @@ export default {
       } else {
         qrystr = qrystr + '&chargerid=' + this.chargerid;
       }
-      let result = await this.axios.get(qrystr);
-      this.loads++;
-      this.charge = result.data;
-      this.mac = this.charge.mac;
-      this.requestclass = 'text-muted';
-      if ( this.loads < 1000 ) {
-        setTimeout(this.fetchData, 1000);
+      let result;
+      try{
+        result = await this.axios.get(qrystr);
+      }catch(e){
+        console.error(e);
+      }
+      if (result && result.status==200) {
+        this.loads++;
+        this.charge = result.data;
+        this.mac = this.charge.mac;
+        this.requestclass = 'text-muted';
+        if ( this.loads < 1000 ) {
+            setTimeout(this.fetchData, 1000);
+        }
       }
     },
     async login(){
@@ -269,5 +277,14 @@ export default {
 }
 .st_offline {
   background-color:rgba(255,0,0,0.2);
+}
+.mask {
+    background-color: rgba(0,0,0,0.7);
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:10;
 }
 </style>

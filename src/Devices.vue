@@ -1,5 +1,6 @@
 <template>
   <div id="app2">
+  <div v-if="loads==0" class="mask" @touchmove.prevent>&nbsp;</div>
   <b-container fluid="xs">
     <b-table-simple hover small caption-top responsive="xs">
       <b-thead head-variant="light">
@@ -57,7 +58,7 @@
                 </b-input-group-append>
               </b-input-group>
           </b-td>
-          <b-td v-else @click="imaxme(index)">{{item.ecurrent}}
+          <b-td v-else @click="imaxme(index)" class="d-none d-lg-table-cell">{{item.ecurrent}}
           </b-td>
           <b-td class="d-none d-lg-table-cell">{{item.tp0}}/{{item.tp2}}°C</b-td>
           <b-td class="d-none d-md-table-cell">{{item.pwa}}</b-td>
@@ -160,6 +161,7 @@ export default {
   },
   data() {
     return {
+      loads:0,
       imaxid: -1,
       workingid:-1,
       workingme:-1,
@@ -194,8 +196,11 @@ export default {
         qrystr = qrystr + '&connected=' + this.onoffsearch;
       }
       let result = await this.axios.get(qrystr);
-      if ( result.data.nextToken ) this.nextPageToken = result.data.nextToken;
-      this.items.push.apply(this.items, result.data.items);
+      if (result.status==200) {
+        this.loads++;
+        if ( result.data.nextToken ) this.nextPageToken = result.data.nextToken;
+        this.items.push.apply(this.items, result.data.items);
+      }
     },
     async login(){
       let evuserid = localStorage.getItem('evuserid');
@@ -352,3 +357,14 @@ export default {
   }
 }
 </script>
+<style>
+.mask {
+    background-color: rgba(0,0,0,0.7);
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:10;
+}
+</style>
