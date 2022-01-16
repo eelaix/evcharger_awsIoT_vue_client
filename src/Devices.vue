@@ -35,7 +35,7 @@
           <b-td v-else>
             <b-button variant="outline-warning" size="sm" :href="'/charger.html?id='+item.chargerid">{{item.chargerid}}</b-button>
           </b-td>
-          <b-td v-b-tooltip.hover :title="item.mac">{{item.beeptime}}</b-td>
+          <b-td v-b-tooltip.hover :title="item.mac">{{item.beeptime}}<span v-if="item.connected==1">({{item.keyid}})</span></b-td>
           <b-td v-b-tooltip.hover :title="item.rebootdate">{{item.onlinedate}}</b-td>
           <b-td class="d-none d-md-table-cell">{{GUNSTANDARD[item.gunstandard]|trans}}
           <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
