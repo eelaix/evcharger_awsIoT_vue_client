@@ -131,11 +131,15 @@ export default {
       let evuserid = localStorage.getItem('evuserid');
       let loginparam = '/login?userid='+evuserid+'&tm='+new Date().getTime();
       let loginresult = await this.axios.get(loginparam);
-      this.utype = loginresult.data.utype;
-      this.uflag = loginresult.data.uflag;
-      if (evuserid==undefined || evuserid.length!=21)
-      {
-        localStorage.setItem('evuserid', loginresult.data.id);
+      if (loginresult.data.utype==-1) {
+          alert('请点击“在浏览器中打开”并添加书签，不要直接用微信操作');
+      } else {
+        this.utype = loginresult.data.utype;
+        this.uflag = loginresult.data.uflag;
+        if (evuserid==undefined || evuserid.length!=21)
+        {
+            localStorage.setItem('evuserid', loginresult.data.id);
+        }
       }
     },
     async setmyuserid(){

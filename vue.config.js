@@ -14,6 +14,13 @@ module.exports = {
       title: 'devices',
       chunks: ['chunk-vendors', 'chunk-common', 'devices']
     },
+    users: {
+      entry: 'src/users.js',
+      template: 'public/users.html',
+      filename: 'users.html',
+      title: 'users',
+      chunks: ['chunk-vendors', 'chunk-common', 'users']
+    },
     index: 'src/charger.js'
   }
 }

@@ -47,7 +47,7 @@
           <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
           </b-td>
           <b-td class="d-none d-md-table-cell">{{item.pon}}</b-td>
-          <b-td class="d-none d-lg-table-cell">{{item.location}}</b-td>
+          <b-td class="d-none d-lg-table-cell">{{item.ipaddress}}</b-td>
           <b-td v-if="imaxid==index">
               <b-input-group size="sm">
                 <b-form-input v-model="item.imax[0]"></b-form-input>
@@ -108,14 +108,15 @@
   </div>
   <b-form inline class="mt-2 ml-2">
     <b-input-group class="col-12">
-      <b-button-group class="mr-auto">
-        <b-button variant="success" disabled="true">{{$t('message.btn_more')}}</b-button>
-      </b-button-group>
-      <b-navbar-nav class="mr-2">
+        <b-button-group class="mr-auto">
+          <b-button variant="outline-success" :disabled="nextPageToken==undefined">{{$t('message.btn_more')}}</b-button>
+          <b-button variant="outline-success" href="/users.html">{{$t('message.btn_user')}}</b-button>
+        </b-button-group>
+        <b-navbar-nav class="mr-2">
         <b-nav-item @click="setLocale">{{'Change Language To: '|trans}}
-          <b-avatar class="btn ml-2" v-t.text="'message.languageto'" @click="setLocale"></b-avatar>
+          <b-avatar class="btn ml-2" size="sm" style="font-size:0.6em;" v-t.text="'message.languageto'" @click="setLocale"></b-avatar>
         </b-nav-item>
-      </b-navbar-nav>
+        </b-navbar-nav>
     </b-input-group>
   </b-form>
   <b-form inline class="mt-2 ml-2">
