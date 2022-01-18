@@ -67,7 +67,6 @@
   </b-container>
   </div>
 </template>
-
 <script>
 const getQueryString = function ( name ) {
   let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)")
@@ -184,7 +183,6 @@ export default {
   }
 }
 </script>
-
 <style>
 @media only screen and (orientation: portrait) {
   #app1 {

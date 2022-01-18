@@ -1,5 +1,5 @@
 <template>
-  <div id="app2">
+  <div id="app3">
   <div v-if="loads==0" class="mask" @touchmove.prevent>&nbsp;</div>
   <b-container fluid="xs">
     <b-table-simple hover small caption-top responsive="xs">
@@ -27,7 +27,7 @@
           <b-td>{{item.powall}}</b-td>
       </b-tr>
     </b-tbody>
-  </b-table-simple>
+    </b-table-simple>
   <div v-show="items.length==0" class="pl-4 pr-4">
     <b-card header-tag="header" footer-tag="footer" style="box-shadow: 10px 10px 20px rgba(51, 51, 51, .4);">
       <template v-slot:header>
@@ -56,10 +56,9 @@
   </b-container>
   </div>
 </template>
-
 <script>
 export default {
-  name: 'devices',
+  name: 'users',
   components: {
   },
   mounted() {

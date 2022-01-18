@@ -1,5 +1,3 @@
-
-
 // for China NX
 export const BASE = 'https://6i7aw1ft15.execute-api.cn-northwest-1.amazonaws.com.cn';
 

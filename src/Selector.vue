@@ -7,7 +7,6 @@
     </b-row>
   </b-modal>
 </template>
-
 <script>
   export default {
     name: 'Selector',

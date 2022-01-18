@@ -145,7 +145,6 @@
   </b-container>
   </div>
 </template>
-
 <script>
 import { ChargerGuns } from '@/config'
 import { GunStandard } from '@/config'
