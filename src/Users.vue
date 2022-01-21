@@ -13,6 +13,7 @@
           <b-th v-b-tooltip.hover :title="$t('message.title_usr_uflag')">{{'uflag'|trans}}</b-th>
           <b-th v-b-tooltip.hover :title="$t('message.title_usr_chgtimes')">{{'uchgtimes'|trans}}</b-th>
           <b-th v-b-tooltip.hover :title="$t('message.title_usr_powall')">{{'upowall'|trans}}</b-th>
+          <b-th>-</b-th>
         </b-tr>
       </b-thead>
       <b-tbody v-for="(item, index) in items" :key="index">
@@ -25,6 +26,12 @@
           <b-td>{{item.uflag}}</b-td>
           <b-td>{{item.chgtimes}}</b-td>
           <b-td>{{item.powall}}</b-td>
+          <b-td>
+            <b-button-group size="sm">
+                <b-button variant="outline-warning" @click="removeone(item.id)">{{$t('message.btn_remove')}}</b-button>
+                <b-button variant="outline-warning" @click="openmodal(index)">{{$t('message.btn_permto')}}</b-button>
+            </b-button-group>
+          </b-td>
       </b-tr>
     </b-tbody>
     </b-table-simple>
@@ -53,13 +60,16 @@
     </b-input-group>
   </b-form>
   <b-modal v-model="modalshow" no-close-on-backdrop no-close-on-esc hide-header ok-only :ok-title="$t('message.btn_ok')">{{modalmsg}}</b-modal>
+  <Selectdevice v-bind="caller" @callback="callback" />
   </b-container>
   </div>
 </template>
 <script>
+import Selectdevice from '@/Selectdevice.vue'
 export default {
   name: 'users',
   components: {
+      Selectdevice
   },
   mounted() {
     this.login();
@@ -68,11 +78,11 @@ export default {
   data() {
     return {
       loads:0,
-      clicked:false,
       modalshow: false,
       modalmsg:'',
       search: '',
       items: [],
+      caller:{permedcharger:[],userid:'',uflag:''},
       nextPageToken:undefined
     }
   },
@@ -108,6 +118,25 @@ export default {
         this.nextPageToken = undefined;
         this.items = [];
         this.fetchData();
+    },
+    async removeone(id){
+      let evuserid = localStorage.getItem('evuserid');
+      let qryparam = '/removeone?userid='+evuserid+'&tm='+new Date().getTime()+'&id='+id;
+      await this.axios.get(qryparam);
+      this.items = [];
+      this.fetchData();
+    },
+    openmodal(idx) {
+      let item = this.items[idx];
+      this.caller.userid = item.id;
+      this.caller.uflag = item.uflag;
+      this.caller.permedcharger = item.permedcharger;
+      this.$bvModal.show('mdSelector1');
+    },
+    async callback(obj) {
+        let evuserid = localStorage.getItem('evuserid');
+        let qryparam = '/savepermedcharger?userid='+evuserid+'&tm='+new Date().getTime()+'&uid='+obj.userid+'&permed='+obj.permedcharger.join(',');
+        await this.axios.get(qryparam);
     },
   }
 }

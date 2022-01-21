@@ -8,14 +8,13 @@
           <b-th v-b-tooltip.hover :title="$t('message.title_chargerid')">{{'chargerid'|trans}}</b-th>
           <b-th v-b-tooltip.hover :title="$t('message.title_beeptime')">{{'beeptime'|trans}}</b-th>
           <b-th v-b-tooltip.hover :title="$t('message.title_rebootdate')">{{'rebootdate'|trans}}</b-th>
-          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_gunstandard')">{{'gunstandard'|trans}}</b-th>
-          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_chargertype')">{{'chargertype'|trans}}</b-th>
-          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_guestok')">{{'guestok'|trans}}</b-th>
+          <b-th v-b-tooltip.hover :title="$t('message.title_power')">{{'power'|trans}}</b-th>
           <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_boottimes')">{{'boottimes'|trans}}</b-th>
           <b-th class="d-none d-lg-table-cell" v-b-tooltip.hover :title="$t('message.title_location')">{{'location'|trans}}</b-th>
-          <b-th class="d-none d-lg-table-cell" v-b-tooltip.hover :title="$t('message.title_ecurrent')">{{'ecurrent'|trans}}</b-th>
           <b-th class="d-none d-lg-table-cell" v-b-tooltip.hover :title="$t('message.title_temperature')">{{'temperature'|trans}}</b-th>
-          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_power')">{{'power'|trans}}</b-th>
+          <b-th class="d-none d-lg-table-cell" v-b-tooltip.hover :title="$t('message.title_ecurrent')">{{'ecurrent'|trans}}</b-th>
+          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_guestok')">{{'guestok'|trans}}</b-th>
+          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_gunstandard')">{{'gunstandard'|trans}}</b-th>
           <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_operate')">{{'operate'|trans}}</b-th>
         </b-tr>
       </b-thead>
@@ -37,31 +36,27 @@
           </b-td>
           <b-td v-b-tooltip.hover :title="item.mac">{{item.beeptime}}<span v-if="item.connected==1">({{item.keyid}})</span></b-td>
           <b-td v-b-tooltip.hover :title="item.rebootdate">{{item.onlinedate}}</b-td>
-          <b-td class="d-none d-md-table-cell">{{GUNSTANDARD[item.gunstandard]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
-          </b-td>
-          <b-td class="d-none d-md-table-cell">{{CHARGERGUNS[item.chargertype]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(1,index)" variant="warning"></b-icon>
-          </b-td>
-          <b-td class="d-none d-md-table-cell">{{GUEST_NOYES[item.guestok]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
-          </b-td>
+          <b-td>{{item.pwa[0]}}/{{item.pwa[1]}}</b-td>
           <b-td class="d-none d-md-table-cell">{{item.pon}}</b-td>
           <b-td class="d-none d-lg-table-cell">{{item.ipaddress}}</b-td>
+          <b-td class="d-none d-lg-table-cell">{{item.tpa[0]}}/{{item.tpa[1]}}°C</b-td>
           <b-td v-if="imaxid==index">
               <b-input-group size="sm">
                 <b-form-input v-model="item.imax[0]"></b-form-input>
                 <b-form-input v-model="item.imax[1]"></b-form-input>
-                <b-form-input v-model="item.imax[2]"></b-form-input>
                 <b-input-group-append>
                   <b-button variant="outline-warning" @click="setimax(item)">{{$t('message.btn_save')}}</b-button>
                 </b-input-group-append>
               </b-input-group>
           </b-td>
-          <b-td v-else @click="imaxme(index)" class="d-none d-lg-table-cell">{{item.ecurrent}}
+          <b-td v-else @click="imaxme(index)" class="d-none d-lg-table-cell">{{item.ixa[0]}}/{{item.ixa[1]}}
           </b-td>
-          <b-td class="d-none d-lg-table-cell">{{item.tp0}}/{{item.tp2}}°C</b-td>
-          <b-td class="d-none d-md-table-cell">{{item.pwa}}</b-td>
+          <b-td class="d-none d-md-table-cell">{{GUEST_NOYES[item.guestok]|trans}}
+          <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
+          </b-td>
+          <b-td class="d-none d-md-table-cell">{{GUNSTANDARD[item.gunstandard]|trans}}
+          <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
+          </b-td>
           <b-td class="d-none d-md-table-cell">
             <b-button-group size="sm">
                   <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
@@ -71,25 +66,24 @@
           </b-td>
       </b-tr>
       <b-tr>
-        <b-td colspan="3" class="d-table-cell d-md-none">
-          {{GUNSTANDARD[item.gunstandard]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
-          {{CHARGERGUNS[item.chargertype]|trans}}
-          <b-icon icon="chevron-down" @click="openmodal(1,index)" variant="warning"></b-icon>
+        <b-td colspan="4" class="d-table-cell d-md-none">
+          <span class="mr-2">
+          {{item.pon}}
+          </span>
+          <span class="mr-2">{{item.tpa[0]}}/{{item.tpa[1]}}</span>
+          <span class="mr-2">{{item.ixa[0]}}/{{item.ixa[1]}}</span>
+          <span class="mr-2">
           {{GUEST_NOYES[item.guestok]|trans}}
           <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
-          {{item.pon}}/{{item.pwa}}Kwh
-        </b-td>
-      </b-tr>
-      <b-tr>
-        <b-td colspan="3" class="d-table-cell d-md-none">
-            {{item.ecurrent}}/
-            {{item.tp0}}/{{item.tp2}}°C
-              <b-button-group size="sm">
-                    <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
-                    <b-button variant="outline-warning" @click="docmd(2,item)" :disabled="item.connected==0">{{$t('message.op_reboot')}}</b-button>
-                    <b-button variant="outline-warning" @click="docmd(3,item)" :disabled="item.connected==0">{{$t('message.op_beep')}}</b-button>
-              </b-button-group>
+          <span class="mr-3">{{GUNSTANDARD[item.gunstandard]|trans}}
+          <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
+          </span>
+          </span>
+            <b-button-group size="sm">
+                <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
+                <b-button variant="outline-warning" @click="docmd(2,item)" :disabled="item.connected==0">{{$t('message.op_reboot')}}</b-button>
+                <b-button variant="outline-warning" @click="docmd(3,item)" :disabled="item.connected==0">{{$t('message.op_beep')}}</b-button>
+            </b-button-group>
         </b-td>
       </b-tr>
     </b-tbody>
@@ -146,7 +140,6 @@
   </div>
 </template>
 <script>
-import { ChargerGuns } from '@/config'
 import { GunStandard } from '@/config'
 import { Guest_noyes } from '@/config'
 import Selector from '@/Selector.vue'
@@ -177,7 +170,6 @@ export default {
       nextPageToken:undefined,
       GUESTOKS: [this.$t('message.guest_no'),this.$t('message.guest_yes')],
       GUEST_NOYES: Guest_noyes,
-      CHARGERGUNS: ChargerGuns,
       GUNSTANDARD: GunStandard
     }
   },
@@ -298,13 +290,12 @@ export default {
     async setimax(itm) {
       itm.imax[0] = Number(itm.imax[0]);
       itm.imax[1] = Number(itm.imax[1]);
-      itm.imax[2] = Number(itm.imax[2]);
-      if (isNaN(itm.imax[0]) || isNaN(itm.imax[1]) || isNaN(itm.imax[2])) {
+      if (isNaN(itm.imax[0]) || isNaN(itm.imax[1])) {
         this.modalmsg = this.$t('message.err_imax');
         this.modalshow = true;
         return;
       }
-      if (itm.imax[0]>32 || itm.imax[1]>32 || itm.imax[2]>32) {
+      if (itm.imax[0]>32 || itm.imax[1]>32) {
         this.modalmsg = this.$t('message.err_maxi');
         this.modalshow = true;
         return;
@@ -328,9 +319,17 @@ export default {
     },
     async docmd(cmdid, itm) {
       if ( cmdid < 3 ) itm.connected = 0;
-      let evuserid = localStorage.getItem('evuserid');
-      let qryparam = '/docmd?userid='+evuserid+'&tm='+new Date().getTime()+'&cmd='+cmdid+'&mac='+itm.mac;
-      await this.axios.get(qryparam);
+      let confimok = false;
+      if (cmdid==1) {
+          confimok = confirm(this.$t('message.otaconfirm'));
+      } else {
+          confimok = true;
+      }
+      if (confimok){
+        let evuserid = localStorage.getItem('evuserid');
+        let qryparam = '/docmd?userid='+evuserid+'&tm='+new Date().getTime()+'&cmd='+cmdid+'&mac='+itm.mac;
+        await this.axios.get(qryparam);
+      }
     },
     async setuflag() {
       if ( this.uflag.length>2 ) {

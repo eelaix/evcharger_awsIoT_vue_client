@@ -11,46 +11,35 @@
     </b-form>
     <div class="boxw devbox1">
         <div class="boxw devbox2" :class="chargerstaclass[charge.stateid]">
-          <div class="boxhead mt-2 mb-4">
+          <div class="boxhead mt-4 mb-4">
           <div class="pt-3" :class="requestclass">{{'chargerid'|trans}}: {{chargerid}}</div>
-          <div class="pb-3">{{'chargerguns'|trans}}: {{CHARGERGUNS[charge.chargertype]|trans}}</div>
           </div>
           <b-row cols="2">
             <b-col class="rowpad1">
-    <div>{{'state_charger'|trans}}: <br/><span class="text-info">{{charge.connected==1?$t('message.online'):$t('message.offline')}}</span></div>
+    <div>{{'state_dev'|trans}}: <br/><span class="text-info">{{CHARGERSTATS[charge.stateid]|trans}}</span></div>
     <div>{{'state_stop'|trans}}: <br/><span class="text-info">{{charge.stp==1?$t('message.stopdn'):$t('message.normal')}}</span></div>
-    <div>{{'state_l_gnd'|trans}}: <br/><span class="text-info">{{charge.lgd==1?$t('message.normal'):$t('message.abnormal')}}</span></div>
-    <div>{{'state_box'|trans}}: <br/><span class="text-info">{{charge.dor==1?$t('message.closed'):$t('message.opened')}}</span></div>
-    <div>{{'charge_pnp'|trans}}: <br/><span class="text-info">{{charge.pnp==1?$t('message.forbid'):$t('message.allowed')}}</span></div>
+    <div>{{'state_l_gnd'|trans}}: <br/><span class="text-info">{{charge.lgd==1?$t('message.normal'):$t('message.abnormal')}}<span class="text-danger" v-if="charge.dor==0">*</span></div>
+    <div>{{'charge_pnp'|trans}}: <br/><span class="text-info">{{(charge.swk&4==0)?$t('message.forbid'):$t('message.allowed')}}</span></div>
     <div>{{'charge_guestok'|trans}}: <br/><span class="text-info">{{charge.guestok==1?$t('message.allowed'):$t('message.forbid')}}</span></div>
             </b-col>
             <b-col class="rowpad2">
-    <div>{{'charge_fwmver'|trans}}: <br/><span class="text-primary">{{charge.ver}}</span></div>
-    <div>{{'state_dev'|trans}}: <br/><span class="text-primary">{{CHARGERSTATS[charge.stateid]|trans}}</span></div>
-    <div>{{'charge_current'|trans}}: <br/><span class="text-primary">{{charge.ixa}}A</span></div>
-    <div>{{'charge_tempure'|trans}}: <br/><span class="text-primary">{{charge.tp0}}°C</span></div>
-    <div>{{'charge_volplus'|trans}}: <br/><span class="text-primary">{{charge.cpa}}V</span></div>
-    <div>{{'charge_volmin'|trans}}: <br/><span class="text-primary">{{charge.cza}}V</span></div>
+    <div>{{'charge_volmain'|trans}}: <br/><span class="text-primary">{{charge.pva[gunid]}}V</span></div>
+    <div>{{'charge_current'|trans}}: <br/><span class="text-primary">{{charge.ixa[gunid]}}A</span></div>
+    <div>{{'charge_power'|trans}}: <br/><span class="text-primary">{{charge.pwa[gunid]}}KWh</span></div>
+    <div>{{'charge_tempure'|trans}}: <br/><span class="text-primary">{{charge.tpa[0]}}/{{charge.tpa[1]}}°C</span></div>
+    <div>{{'charge_volplus'|trans}}: <br/><span class="text-primary">{{charge.cpa[gunid]}}/{{charge.cza[gunid]}}</span></div>
             </b-col>
           </b-row>
-          <b-row cols="3" class="ml-5 mr-5 mb-3">
+          <b-row cols="12" class="ml-5 mr-5 mb-4 mt-4">
             <b-col>
-              <b-button @click="setgun(0)" block :variant="gunid==0?'primary':'outline-primary'" v-if="charge.chargertype>1">
+              <b-button @click="setgun(0)" size="lg" block :disabled="charge.imax[0]==0" :variant="gunid==0?'primary':'outline-primary'">
               {{'gunleft'|trans}}
               </b-button>
-              <span v-else>&nbsp;</span>
             </b-col>
             <b-col>
-              <b-button @click="setgun(1)" block :disabled="charge.imax[1]==0" :variant="gunid==1?'primary':'outline-primary'" v-if="charge.chargertype>1">
-              {{'gunmid'|trans}}
-              </b-button>
-              <span v-else>&nbsp;</span>
-            </b-col>
-            <b-col>
-              <b-button @click="setgun(2)" block :disabled="charge.imax[2]==0" :variant="gunid==2?'primary':'outline-primary'" v-if="charge.chargertype>1">
+              <b-button @click="setgun(1)" size="lg" block :disabled="charge.imax[1]==0" :variant="gunid==1?'primary':'outline-primary'">
               {{'gunright'|trans}}
               </b-button>
-              <span v-else>&nbsp;</span>
             </b-col>
           </b-row>
           <b-button @click="docharge()" block size="lg" :variant="charge.stateid<2?'success':'secondary'" class="pt-4 pb-4" style="font-size:2.5em;">
@@ -74,7 +63,6 @@ const getQueryString = function ( name ) {
   if (r != null) return decodeURI(r[2])
   return null
 }
-import { ChargerGuns } from '@/config'
 import { ChargerSTATS } from '@/config'
 export default {
   name: 'charger',
@@ -93,10 +81,9 @@ export default {
       uflag:'',
       clicked:false,
       requestclass:'text-danger',
-      gunid:0,
+      gunid:-1,
       chargerstaclass:['st_readyfree','st_readygunin','st_readywaiting','st_readycharging','st_readybadgnd','st_stopdown','st_offline'],
-      charge:{mac:'',guestok:1,chargertype:0,gunstandard:0,connected:0,ver:'0.0.0',pnp:0,stp:0,dor:0,lgd:0,st0:0,st1:0,st2:0,pw0:0,pw1:0,pw2:0,pw3:0,ix0:0,ix1:0,ix2:0,tp0:0,tp1:0,cp0:0,cp1:0,cp2:0,cz0:0,cz1:0,cz2:0,stateid:0,imax:[32,0,0]},
-      CHARGERGUNS:ChargerGuns,
+      charge:{mac:'',guestok:1,gunstyle:1,gunstandard:0,connected:0,ver:'0.0.0',swk:0,stp:0,dor:0,lgd:0,sta:[0,0],pwa:[0,0],ixa:[0,0],tpa:[0,0],cpa:[0,0],cza:[0,0],pva:[0,0],stateid:0,imax:[32,0]},
       CHARGERSTATS:ChargerSTATS
     }
   },
@@ -110,7 +97,7 @@ export default {
       } else {
         qrystr = qrystr + '&chargerid=' + this.chargerid;
       }
-      let result;
+      let result = undefined;
       try{
         result = await this.axios.get(qrystr);
       }catch(e){
@@ -120,6 +107,20 @@ export default {
         this.loads++;
         this.charge = result.data;
         this.mac = this.charge.mac;
+        if (this.gunid==-1) {
+            if (this.charge.gunstyle==3) {
+                let cp0 = Number(this.charge.cpa[0]);
+                if (cp0>8 && cp0<11) {
+                    this.gunid = 0;
+                } else {
+                    this.gunid = 1;
+                }
+            } else if (this.charge.gunstyle==1) {
+                this.gunid = 1;
+            } else {
+                this.gunid = 0;
+            }
+        }
         this.requestclass = 'text-muted';
         if ( this.loads < 1000 ) {
             setTimeout(this.fetchData, 1000);
@@ -129,7 +130,12 @@ export default {
     async login(){
       let evuserid = localStorage.getItem('evuserid');
       let loginparam = '/login?userid='+evuserid+'&tm='+new Date().getTime();
-      let loginresult = await this.axios.get(loginparam);
+      let loginresult = undefined;
+      try{
+        loginresult = await this.axios.get(loginparam);
+      }catch(e){
+        console.error(e);
+      }
       if (loginresult.data.utype==-1) {
           alert('请点击“在浏览器中打开”并添加书签，不要直接用微信操作');
       } else {
@@ -186,30 +192,30 @@ export default {
 <style>
 @media only screen and (orientation: portrait) {
   #app1 {
-    line-height: 1.4em;
+    line-height:1.5em;
+    font-size:1.2em;
   }
   .boxw {
-    width:100%;
     border-radius:100%;
   }
   .devbox2 {
     border: 1px dotted rgba(0,0,0,0.1);
   }
   .rowpad1 div {
-    margin-left:34px;
-    padding-left:20px;
-    margin-bottom: 10px;
+    margin-left:50px;
+    padding-left:30px;
+    margin-bottom:10px;
     border-radius:50%;
-    width:90%;
+    width:80%;
     border-left:1px dotted rgba(0,0,0,0.2);
     border-bottom:1px dotted rgba(0,0,0,0.2);
     border-right:1px dotted rgba(0,0,0,0.2);
   }
   .rowpad2 div {
     padding-left:30px;
-    margin-bottom: 10px;
+    margin-bottom:10px;
     border-radius:50%;
-    width:80%;
+    width:76%;
     border-left:1px dotted rgba(0,0,0,0.2);
     border-bottom:1px dotted rgba(0,0,0,0.2);
     border-right:1px dotted rgba(0,0,0,0.2);
@@ -217,14 +223,14 @@ export default {
 }
 @media only screen and (orientation: landscape) {
   #app1 {
-    line-height: 1.5em;
+    line-height:1.4em;
+    font-size:1.2em;
   }
   .boxw {
     width:600px;
     border-radius:100%;
   }
   .devbox2 {
-    line-height: 1.8em;
     border: 1px dotted rgba(0,0,0,0.1);
   }
   .rowpad1 div {
@@ -237,9 +243,8 @@ export default {
     border-right:1px dotted rgba(0,0,0,0.2);
   }
   .rowpad2 div {
-    margin-left:0px;
-    padding-left:40px;
-    width:60%;
+    padding-left:50px;
+    width:70%;
     margin-bottom: 10px;
     border-radius:50%;
     border-left:1px dotted rgba(0,0,0,0.2);
@@ -258,6 +263,7 @@ export default {
 }
 .devbox1 {
   margin:0 auto;
+  margin-top:-40px;
 }
 .st_readyfree {
   background-color:rgba(0,255,0,0.2);
