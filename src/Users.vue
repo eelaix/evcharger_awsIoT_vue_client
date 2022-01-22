@@ -29,7 +29,7 @@
           <b-td>
             <b-button-group size="sm">
                 <b-button variant="outline-warning" @click="removeone(item.id)">{{$t('message.btn_remove')}}</b-button>
-                <b-button variant="outline-warning" @click="openmodal(index)">{{$t('message.btn_permto')}}</b-button>
+                <b-button variant="outline-warning" @click="openmodal(index)">{{$t('message.btn_permto')}}({{item.permedcharger.length}})</b-button>
             </b-button-group>
           </b-td>
       </b-tr>

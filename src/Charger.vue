@@ -18,7 +18,7 @@
             <b-col class="rowpad1">
     <div>{{'state_dev'|trans}}: <br/><span class="text-info">{{CHARGERSTATS[charge.stateid]|trans}}</span></div>
     <div>{{'state_stop'|trans}}: <br/><span class="text-info">{{charge.stp==1?$t('message.stopdn'):$t('message.normal')}}</span></div>
-    <div>{{'state_l_gnd'|trans}}: <br/><span class="text-info">{{charge.lgd==1?$t('message.normal'):$t('message.abnormal')}}<span class="text-danger" v-if="charge.dor==0">*</span></div>
+    <div>{{'state_l_gnd'|trans}}: <br/><span class="text-info">{{charge.lgd==1?$t('message.normal'):$t('message.abnormal')}}</span><span class="text-danger" v-if="charge.dor==0">*</span></div>
     <div>{{'charge_pnp'|trans}}: <br/><span class="text-info">{{(charge.swk&4==0)?$t('message.forbid'):$t('message.allowed')}}</span></div>
     <div>{{'charge_guestok'|trans}}: <br/><span class="text-info">{{charge.guestok==1?$t('message.allowed'):$t('message.forbid')}}</span></div>
             </b-col>
