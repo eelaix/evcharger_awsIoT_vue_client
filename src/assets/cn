@@ -139,7 +139,7 @@ export const  message = {
   'uchgtimes':'次数',
   'upowall':'用电',
   'otaconfirm':'你确定要升级固件吗？',
-  'selector_mine':'已授权电桩 (点击编号可取消授权)',
+  'selector_mine':'已授权电桩',
   'selector_noauth':'未授权电桩 (点击编号可授权)',
   'chargersearch':'按电桩编号查询,最少可填前4个数字',
   

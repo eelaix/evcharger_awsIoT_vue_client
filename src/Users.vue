@@ -5,33 +5,50 @@
     <b-table-simple hover small caption-top responsive="xs">
       <b-thead head-variant="light">
         <b-tr>
-          <b-th v-b-tooltip.hover :title="$t('message.title_usr_cretime')">{{'ucreatetime'|trans}}</b-th>
-          <b-th v-b-tooltip.hover :title="$t('message.title_usr_lastactive')">{{'ulastactive'|trans}}</b-th>
+          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_usr_cretime')">{{'ucreatetime'|trans}}</b-th>
+          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_usr_lastactive')">{{'ulastactive'|trans}}</b-th>
           <b-th v-b-tooltip.hover :title="$t('message.title_usr_deviceos')">{{'udeviceos'|trans}}</b-th>
           <b-th v-b-tooltip.hover :title="$t('message.title_usr_browser')">{{'ubrowser'|trans}}</b-th>
-          <b-th v-b-tooltip.hover :title="$t('message.title_usr_ipaddress')">{{'uipaddress'|trans}}</b-th>
+          <b-th class="d-none d-md-table-cell" v-b-tooltip.hover :title="$t('message.title_usr_ipaddress')">{{'uipaddress'|trans}}</b-th>
           <b-th v-b-tooltip.hover :title="$t('message.title_usr_uflag')">{{'uflag'|trans}}</b-th>
-          <b-th v-b-tooltip.hover :title="$t('message.title_usr_chgtimes')">{{'uchgtimes'|trans}}</b-th>
-          <b-th v-b-tooltip.hover :title="$t('message.title_usr_powall')">{{'upowall'|trans}}</b-th>
-          <b-th>-</b-th>
+          <b-th class="d-none d-sm-table-cell" v-b-tooltip.hover :title="$t('message.title_usr_chgtimes')">{{'uchgtimes'|trans}}</b-th>
+          <b-th class="d-none d-sm-table-cell" v-b-tooltip.hover :title="$t('message.title_usr_powall')">{{'upowall'|trans}}</b-th>
+          <b-th class="d-none d-sm-table-cell">-</b-th>
         </b-tr>
       </b-thead>
       <b-tbody v-for="(item, index) in items" :key="index">
         <b-tr :class="item.utype==9?'vipuser':''">
-          <b-td>{{item.regtime}}</b-td>
-          <b-td>{{item.lastvisit}}</b-td>
+          <b-td class="d-none d-md-table-cell">{{item.regtime}}</b-td>
+          <b-td class="d-none d-md-table-cell">{{item.lastvisit}}</b-td>
           <b-td>{{item.uadevice}}</b-td>
           <b-td>{{item.uabrowser}}</b-td>
-          <b-td>{{item.ipaddress}}</b-td>
+          <b-td class="d-none d-md-table-cell">{{item.ipaddress}}</b-td>
           <b-td>{{item.uflag}}</b-td>
-          <b-td>{{item.chgtimes}}</b-td>
-          <b-td>{{item.powall}}</b-td>
-          <b-td>
+          <b-td class="d-none d-sm-table-cell">{{item.chgtimes}}</b-td>
+          <b-td class="d-none d-sm-table-cell">{{item.powall}}</b-td>
+          <b-td class="d-none d-sm-table-cell">
             <b-button-group size="sm">
                 <b-button variant="outline-warning" @click="removeone(item.id)">{{$t('message.btn_remove')}}</b-button>
                 <b-button variant="outline-warning" @click="openmodal(index)">{{$t('message.btn_permto')}}({{item.permedcharger.length}})</b-button>
             </b-button-group>
           </b-td>
+      </b-tr>
+      <b-tr>
+        <b-td colspan="3" class="d-table-cell d-sm-none">
+          <span class="mr-2">
+          {{item.chgtimes}}
+          </span>
+          <span class="mr-2">
+          {{item.powall}}
+          </span>
+          <span class="mr-2">
+          {{item.lastvisit}}
+          </span>
+          <b-button-group size="sm">
+            <b-button variant="outline-warning" @click="removeone(item.id)">{{$t('message.btn_remove')}}</b-button>
+            <b-button variant="outline-warning" @click="openmodal(index)">{{$t('message.btn_permto')}}({{item.permedcharger.length}})</b-button>
+          </b-button-group>
+        </b-td>
       </b-tr>
     </b-tbody>
     </b-table-simple>
@@ -82,7 +99,7 @@ export default {
       modalmsg:'',
       search: '',
       items: [],
-      caller:{permedcharger:[],userid:'',uflag:''},
+      caller:{permedcharger:[],callid:0,userid:'',uflag:''},
       nextPageToken:undefined
     }
   },
@@ -128,6 +145,7 @@ export default {
     },
     openmodal(idx) {
       let item = this.items[idx];
+      this.caller.callid = 0;
       this.caller.userid = item.id;
       this.caller.uflag = item.uflag;
       this.caller.permedcharger = item.permedcharger;

@@ -2,7 +2,7 @@
   <b-modal id="mdSelector1" size="lg" hide-header hide-footer>
     <b-card header-tag="header" style="box-shadow: 10px 10px 20px rgba(51, 210, 51, .4);" class="mb-4">
       <template v-slot:header>
-        <span class="mb-0">{{$t('message.selector_mine')}}</span>
+        <span class="mb-0">{{$t('message.selector_mine')}}({{uflag}})</span>
       </template>
       <b-card-text>
         <b-row class="p-4" cols="3">
@@ -11,7 +11,7 @@
         </div>
         </b-row>
         <b-input-group class="ml-auto">
-            <b-button variant="outline-primary" block @click="doconfirmok" :disabled="clicked==true">{{$t('message.btn_ok')}}</b-button>
+            <b-button variant="outline-primary" block @click="doconfirmok">{{$t('message.btn_ok')}}</b-button>
         </b-input-group>
       </b-card-text>
     </b-card>
@@ -21,6 +21,9 @@
         <span class="mb-0">{{$t('message.selector_noauth')}}</span>
       </template>
       <b-card-text>
+        <b-row class="p-4" cols="1" v-if="clicked">
+        <b-icon icon="arrow-clockwise" animation="spin" font-scale="8" variant="danger"></b-icon>
+        </b-row>
         <b-row class="p-4" cols="3">
         <div class="mb-3" v-for="(dat,idx) in dbitems" :key="idx">
         <b-button variant="info" @click="selectme(dat)">{{dat}}</b-button>
@@ -41,6 +44,7 @@
   export default {
     name: 'Selectdevice',
     props: {
+      callid:Number,
       userid:String,
       uflag:String,
       permedcharger:Array
@@ -53,16 +57,14 @@
           dbitems:[]
       };
     },
-    mounted() {
-        this.fetchData();
-    },
     beforeUpdate(){
-        if (this.permedcharger.length>0) {
-            this.permedcharger.forEach((id) => {
-                if (this.dbitems.contains(id)) {
-                    this.dbitems.removeone(id);
-                }
-            });
+        if (this.callid==0) {
+            this.callid = 1;
+            this.clicked = true;
+            this.nextPageToken = undefined;
+            this.search = '';
+            this.dbitems = [];
+            this.fetchData();
         }
     },
     methods: {
@@ -80,7 +82,7 @@
         },
         async fetchData(){
             let evuserid = localStorage.getItem('evuserid');
-            let qrystr = '/listchargers?tm='+new Date().getTime()+'&userid='+evuserid;
+            let qrystr = '/listchargerids?tm='+new Date().getTime()+'&userid='+evuserid+'&callid='+this.callid;
             if ( this.nextPageToken ) {
                 qrystr = qrystr + '&nextToken=' + this.nextPageToken;
             }
@@ -93,9 +95,9 @@
                 this.clicked = false;
                 if ( result.data.nextToken ) this.nextPageToken = result.data.nextToken;
                 for (let i=0;i<result.data.items.length;i++) {
-                    haspermed = this.permedcharger.contains(result.data.items[i].chargerid);
+                    haspermed = this.permedcharger.contains(result.data.items[i]);
                     if (haspermed==false) {
-                        this.dbitems.push(result.data.items[i].chargerid);
+                        this.dbitems.push(result.data.items[i]);
                     }
                 }
             }
@@ -113,6 +115,7 @@
                 }
             }
             if (checkok) {
+                this.callid++;
                 this.dbitems = [];
                 this.fetchData();
             }

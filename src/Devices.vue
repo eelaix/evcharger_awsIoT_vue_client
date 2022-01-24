@@ -70,14 +70,23 @@
           <span class="mr-2">
           {{item.pon}}
           </span>
-          <span class="mr-2">{{item.tpa[0]}}/{{item.tpa[1]}}</span>
-          <span class="mr-2">{{item.ixa[0]}}/{{item.ixa[1]}}</span>
+          <template v-if="item.gunstyle==2">
+            <span class="mr-2">{{item.tpa[0]}}</span>
+            <span class="mr-2">{{item.ixa[0]}}</span>
+          </template>
+          <template v-else-if="item.gunstyle==1">
+            <span class="mr-2">{{item.tpa[1]}}</span>
+            <span class="mr-2">{{item.ixa[1]}}</span>
+          </template>
+          <template v-else>
+            <span class="mr-2">{{item.tpa[0]}}/{{item.ixa[0]}}/{{item.ixa[1]}}</span>
+          </template>
           <span class="mr-2">
           {{GUEST_NOYES[item.guestok]|trans}}
           <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
+          </span>
           <span class="mr-3">{{GUNSTANDARD[item.gunstandard]|trans}}
           <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
-          </span>
           </span>
             <b-button-group size="sm">
                 <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
