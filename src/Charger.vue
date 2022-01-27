@@ -19,7 +19,7 @@
     <div>{{'state_dev'|trans}}: <br/><span class="text-info">{{CHARGERSTATS[charge.stateid]|trans}}</span></div>
     <div>{{'state_stop'|trans}}: <br/><span class="text-info">{{charge.stp==1?$t('message.stopdn'):$t('message.normal')}}</span></div>
     <div>{{'state_l_gnd'|trans}}: <br/><span class="text-info">{{charge.lgd==1?$t('message.normal'):$t('message.abnormal')}}</span><span class="text-danger" v-if="charge.dor==0">*</span></div>
-    <div>{{'charge_pnp'|trans}}: <br/><span class="text-info">{{(charge.swk&4==0)?$t('message.forbid'):$t('message.allowed')}}</span></div>
+    <div>{{'charge_pnp'|trans}}: <br/><span class="text-info">{{(charge.swk&4)?$t('message.allowed'):$t('message.forbid')}}</span></div>
     <div>{{'charge_guestok'|trans}}: <br/><span class="text-info">{{charge.guestok==1?$t('message.allowed'):$t('message.forbid')}}</span></div>
             </b-col>
             <b-col class="rowpad2">
@@ -30,14 +30,14 @@
     <div>{{'charge_volplus'|trans}}: <br/><span class="text-primary">{{charge.cpa[gunid]}}/{{charge.cza[gunid]}}</span></div>
             </b-col>
           </b-row>
-          <b-row cols="12" class="ml-5 mr-5 mb-4 mt-4">
+          <b-row cols="12" class="ml-5 mr-5 mb-4 mt-4" :style="gunstyle==3?'opacity:0.1':'opacity:0.5'">
             <b-col>
-              <b-button @click="setgun(0)" size="lg" block :disabled="charge.imax[0]==0" :variant="gunid==0?'primary':'outline-primary'">
+              <b-button @click="setgun(0)" size="lg" block :disabled="charge.imax[0]==0" variant="outline-primary">
               {{'gunleft'|trans}}
               </b-button>
             </b-col>
             <b-col>
-              <b-button @click="setgun(1)" size="lg" block :disabled="charge.imax[1]==0" :variant="gunid==1?'primary':'outline-primary'">
+              <b-button @click="setgun(1)" size="lg" block :disabled="charge.imax[1]==0" variant="outline-primary">
               {{'gunright'|trans}}
               </b-button>
             </b-col>

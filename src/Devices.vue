@@ -37,13 +37,13 @@
           <b-td v-b-tooltip.hover :title="item.mac">{{item.beeptime}}<span v-if="item.connected==1">({{item.keyid}})</span></b-td>
           <b-td v-b-tooltip.hover :title="item.rebootdate">{{item.onlinedate}}</b-td>
           <b-td>{{item.pwa[0]}}/{{item.pwa[1]}}</b-td>
-          <b-td class="d-none d-md-table-cell">{{item.pon}}</b-td>
+          <b-td class="d-none d-md-table-cell" @click="docmd(4,item)">{{item.pon}}</b-td>
           <b-td class="d-none d-lg-table-cell">{{item.ipaddress}}</b-td>
           <b-td class="d-none d-lg-table-cell">{{item.tpa[0]}}/{{item.tpa[1]}}°C</b-td>
           <b-td v-if="imaxid==index">
               <b-input-group size="sm">
-                <b-form-input v-model="item.imax[0]"></b-form-input>
-                <b-form-input v-model="item.imax[1]"></b-form-input>
+                <b-form-input v-model="item.imax[0]" v-if="item.gunstyle==2||item.gunstyle==3"></b-form-input>
+                <b-form-input v-model="item.imax[1]" v-if="item.gunstyle==1||item.gunstyle==3"></b-form-input>
                 <b-input-group-append>
                   <b-button variant="outline-warning" @click="setimax(item)">{{$t('message.btn_save')}}</b-button>
                 </b-input-group-append>
@@ -67,25 +67,25 @@
       </b-tr>
       <b-tr>
         <b-td colspan="4" class="d-table-cell d-md-none">
-          <span class="mr-2">
+          <span class="mr-1">
           {{item.pon}}
           </span>
           <template v-if="item.gunstyle==2">
-            <span class="mr-2">{{item.tpa[0]}}</span>
-            <span class="mr-2">{{item.ixa[0]}}</span>
+            <span class="mr-1">{{item.tpa[0]}}</span>
+            <span class="mr-1">{{item.ixa[0]}}</span>
           </template>
           <template v-else-if="item.gunstyle==1">
-            <span class="mr-2">{{item.tpa[1]}}</span>
-            <span class="mr-2">{{item.ixa[1]}}</span>
+            <span class="mr-1">{{item.tpa[1]}}</span>
+            <span class="mr-1">{{item.ixa[1]}}</span>
           </template>
           <template v-else>
-            <span class="mr-2">{{item.tpa[0]}}/{{item.ixa[0]}}/{{item.ixa[1]}}</span>
+            <span class="mr-1">{{item.tpa[0]}}/{{item.ixa[0]}}/{{item.ixa[1]}}</span>
           </template>
-          <span class="mr-2">
+          <span class="mr-1">
           {{GUEST_NOYES[item.guestok]|trans}}
           <b-icon icon="chevron-down" @click="openmodal(2,index)" variant="warning"></b-icon>
           </span>
-          <span class="mr-3">{{GUNSTANDARD[item.gunstandard]|trans}}
+          <span class="mr-2">{{GUNSTANDARD[item.gunstandard]|trans}}
           <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
           </span>
             <b-button-group size="sm">
@@ -336,8 +336,12 @@ export default {
       }
       if (confimok){
         let evuserid = localStorage.getItem('evuserid');
-        let qryparam = '/docmd?userid='+evuserid+'&tm='+new Date().getTime()+'&cmd='+cmdid+'&mac='+itm.mac;
-        await this.axios.get(qryparam);
+        let qryparam = '/docmd?userid='+evuserid+'&tm='+new Date().getTime()+'&cmd='+cmdid+'&mac='+itm.mac+'&ver='+itm.ver;
+        let axresp = await this.axios.get(qryparam);
+        if (cmdid==1 && axresp.data.rc<0) {
+            this.modalmsg = axresp.data.rm;
+            this.modalshow = true;
+        }
       }
     },
     async setuflag() {
