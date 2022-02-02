@@ -19,7 +19,7 @@
         </b-tr>
       </b-thead>
       <b-tbody v-for="(item, index) in items" :key="index">
-        <b-tr :class="item.connected==1?(item.stp==1?'bg-success text-warning':'bg-success text-white'):'bg-secondary text-light'">
+        <b-tr :class="item.onltime>0?(item.stp==1?'bg-success text-warning':'bg-success text-white'):'bg-secondary text-light'">
           <b-td v-if="workingid==index">
               <b-input-group size="sm">
                 <b-form-input v-model="item.chargerid"></b-form-input>
@@ -34,10 +34,10 @@
           <b-td v-else>
             <b-button variant="outline-warning" size="sm" :href="'/charger.html?id='+item.chargerid">{{item.chargerid}}</b-button>
           </b-td>
-          <b-td v-b-tooltip.hover :title="item.mac">{{item.beeptime}}<span v-if="item.connected==1">({{item.keyid}})</span></b-td>
+          <b-td v-b-tooltip.hover :title="item.mac">{{item.beeptime}}<span v-if="item.onltime>0">({{item.keyid}})</span></b-td>
           <b-td v-b-tooltip.hover :title="item.rebootdate">{{item.onlinedate}}</b-td>
           <b-td>{{item.pwa[0]}}/{{item.pwa[1]}}</b-td>
-          <b-td class="d-none d-md-table-cell" @click="docmd(4,item)">{{item.pon}}</b-td>
+          <b-td class="d-none d-md-table-cell" @click="docmd(4,item)">{{item.pon}}/{{item.connected}}</b-td>
           <b-td class="d-none d-lg-table-cell">{{item.ipaddress}}</b-td>
           <b-td class="d-none d-lg-table-cell">{{item.tpa[0]}}/{{item.tpa[1]}}°C</b-td>
           <b-td v-if="imaxid==index">
@@ -59,9 +59,9 @@
           </b-td>
           <b-td class="d-none d-md-table-cell">
             <b-button-group size="sm">
-                  <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
-                  <b-button variant="outline-warning" @click="docmd(2,item)" :disabled="item.connected==0">{{$t('message.op_reboot')}}</b-button>
-                  <b-button variant="outline-warning" @click="docmd(3,item)" :disabled="item.connected==0">{{$t('message.op_beep')}}</b-button>
+                  <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.onltime==0">{{item.ver}}</b-button>
+                  <b-button variant="outline-warning" @click="docmd(2,item)" :disabled="item.onltime==0">{{$t('message.op_reboot')}}</b-button>
+                  <b-button variant="outline-warning" @click="docmd(3,item)" :disabled="item.onltime==0">{{$t('message.op_beep')}}</b-button>
             </b-button-group>
           </b-td>
       </b-tr>
@@ -89,9 +89,9 @@
           <b-icon icon="chevron-down" @click="openmodal(0,index)" variant="warning"></b-icon>
           </span>
             <b-button-group size="sm">
-                <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.connected==0">{{item.ver}}</b-button>
-                <b-button variant="outline-warning" @click="docmd(2,item)" :disabled="item.connected==0">{{$t('message.op_reboot')}}</b-button>
-                <b-button variant="outline-warning" @click="docmd(3,item)" :disabled="item.connected==0">{{$t('message.op_beep')}}</b-button>
+                <b-button variant="outline-warning" @click="docmd(1,item)" :disabled="item.onltime==0">{{item.ver}}</b-button>
+                <b-button variant="outline-warning" @click="docmd(2,item)" :disabled="item.onltime==0">{{$t('message.op_reboot')}}</b-button>
+                <b-button variant="outline-warning" @click="docmd(3,item)" :disabled="item.onltime==0">{{$t('message.op_beep')}}</b-button>
             </b-button-group>
         </b-td>
       </b-tr>
@@ -205,13 +205,25 @@ export default {
     },
     async login(){
       let evuserid = localStorage.getItem('evuserid');
-      let qryparam = '/login?userid='+evuserid+'&tm='+new Date().getTime();
-      let loginresult = await this.axios.get(qryparam);
-      this.utype = loginresult.data.utype;
-      this.uflag = loginresult.data.uflag;
-      if (loginresult.data.id)
-      {
-        localStorage.setItem('evuserid', loginresult.data.id);
+      let loginparam = '/login?userid='+evuserid+'&tm='+new Date().getTime();
+      let loginresult = undefined;
+      try{
+        loginresult = await this.axios.get(loginparam);
+      }catch(e){
+        console.error(e);
+      }
+      if (loginresult && loginresult.data) {
+        if (loginresult.data.utype==-1) {
+            alert('请点击“在浏览器中打开”并添加书签，不要直接用微信操作');
+        } else {
+            this.utype = loginresult.data.utype;
+            this.uflag = loginresult.data.uflag;
+            if (evuserid==undefined || evuserid.length!=21) {
+                if (loginresult.data.id && loginresult.data.id.length==21) {
+                    localStorage.setItem('evuserid', loginresult.data.id);
+                }
+            }
+        }
       }
     },
     async setmyuserid(){
@@ -327,7 +339,7 @@ export default {
       }
     },
     async docmd(cmdid, itm) {
-      if ( cmdid < 3 ) itm.connected = 0;
+      if ( cmdid < 3 ) itm.onltime = 0;
       let confimok = false;
       if (cmdid==1) {
           confimok = confirm(this.$t('message.otaconfirm'));

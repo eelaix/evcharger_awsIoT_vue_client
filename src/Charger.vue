@@ -83,7 +83,7 @@ export default {
       requestclass:'text-danger',
       gunid:-1,
       chargerstaclass:['st_readyfree','st_readygunin','st_readywaiting','st_readycharging','st_readybadgnd','st_stopdown','st_offline'],
-      charge:{mac:'',guestok:1,gunstyle:1,gunstandard:0,connected:0,ver:'0.0.0',swk:0,stp:0,dor:0,lgd:0,sta:[0,0],pwa:[0,0],ixa:[0,0],tpa:[0,0],cpa:[0,0],cza:[0,0],pva:[0,0],stateid:0,imax:[32,0]},
+      charge:{mac:'',guestok:1,gunstyle:1,gunstandard:0,onltime:0,ver:'0.0.0',swk:0,stp:0,dor:0,lgd:0,sta:[0,0],pwa:[0,0],ixa:[0,0],tpa:[0,0],cpa:[0,0],cza:[0,0],pva:[0,0],stateid:0,imax:[32,0]},
       CHARGERSTATS:ChargerSTATS
     }
   },
@@ -136,14 +136,17 @@ export default {
       }catch(e){
         console.error(e);
       }
-      if (loginresult.data.utype==-1) {
-          alert('请点击“在浏览器中打开”并添加书签，不要直接用微信操作');
-      } else {
-        this.utype = loginresult.data.utype;
-        this.uflag = loginresult.data.uflag;
-        if (evuserid==undefined || evuserid.length!=21)
-        {
-            localStorage.setItem('evuserid', loginresult.data.id);
+      if (loginresult && loginresult.data) {
+        if (loginresult.data.utype==-1) {
+            alert('请点击“在浏览器中打开”并添加书签，不要直接用微信操作');
+        } else {
+            this.utype = loginresult.data.utype;
+            this.uflag = loginresult.data.uflag;
+            if (evuserid==undefined || evuserid.length!=21) {
+                if (loginresult.data.id && loginresult.data.id.length==21) {
+                    localStorage.setItem('evuserid', loginresult.data.id);
+                }
+            }
         }
       }
     },

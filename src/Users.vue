@@ -122,13 +122,25 @@ export default {
     },
     async login(){
       let evuserid = localStorage.getItem('evuserid');
-      let qryparam = '/login?userid='+evuserid+'&tm='+new Date().getTime();
-      let loginresult = await this.axios.get(qryparam);
-      this.utype = loginresult.data.utype;
-      this.uflag = loginresult.data.uflag;
-      if (loginresult.data.id)
-      {
-        localStorage.setItem('evuserid', loginresult.data.id);
+      let loginparam = '/login?userid='+evuserid+'&tm='+new Date().getTime();
+      let loginresult = undefined;
+      try{
+        loginresult = await this.axios.get(loginparam);
+      }catch(e){
+        console.error(e);
+      }
+      if (loginresult && loginresult.data) {
+        if (loginresult.data.utype==-1) {
+            alert('请点击“在浏览器中打开”并添加书签，不要直接用微信操作');
+        } else {
+            this.utype = loginresult.data.utype;
+            this.uflag = loginresult.data.uflag;
+            if (evuserid==undefined || evuserid.length!=21) {
+                if (loginresult.data.id && loginresult.data.id.length==21) {
+                    localStorage.setItem('evuserid', loginresult.data.id);
+                }
+            }
+        }
       }
     },
     dosearch() {
